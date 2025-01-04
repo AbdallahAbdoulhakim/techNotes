@@ -1,26 +1,35 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
+import Inc from "mongoose-sequence";
 
-const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    unique: true,
-    index: true,
+const AutoIncrement = Inc(mongoose);
+
+const noteSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+    },
+    text: {
+      type: String,
+      required: true,
+    },
+    completed: {
+      type: Boolean,
+      default: false,
+    },
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
   },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  mobile: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
+  { timestamps: true }
+);
+
+noteSchema.plugin(AutoIncrement, {
+  inc_field: "ticket",
+  id: "ticket_seq",
+  start_seq: 500,
 });
 
-export default mongoose.model("User", userSchema);
+export default mongoose.model("Note", noteSchema);
