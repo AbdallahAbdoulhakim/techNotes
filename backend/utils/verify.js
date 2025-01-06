@@ -1,8 +1,12 @@
+import mongoose from "mongoose";
+
 export const verifyParams = (
   res,
   params,
   mandatoryParams = [],
   optionalParams = [],
+  oneOfManyParams = [],
+  oneOfManyOptParams = [],
   noParamsAllowed = false
 ) => {
   const keys = Object.keys(params);
@@ -28,7 +32,12 @@ export const verifyParams = (
 
   const invalidParams = keys.reduce(
     (prev, curr) =>
-      [...mandatoryParams, ...optionalParams].includes(curr)
+      [
+        ...mandatoryParams,
+        ...oneOfManyParams,
+        ...optionalParams,
+        ...oneOfManyOptParams,
+      ].includes(curr)
         ? prev
         : [...prev, curr],
     []
@@ -40,6 +49,36 @@ export const verifyParams = (
       `Bad request, invalid param${
         invalidParams.length === 1 ? "" : "s"
       } ${invalidParams.join(", ")}.`
+    );
+  }
+
+  if (
+    oneOfManyParams.length &&
+    oneOfManyParams.every((val) => !keys.includes(val))
+  ) {
+    res.status(400);
+    throw new Error(
+      `Bad request, the request must contains one of the following params: ${oneOfManyParams.join(
+        ", "
+      )}.`
+    );
+  }
+
+  if (oneOfManyParams.filter((param) => keys.includes(param)).length > 1) {
+    res.status(400);
+    throw new Error(
+      `Bad request, Only one of the following params: ${oneOfManyParams.join(
+        ", "
+      )} must be provided.`
+    );
+  }
+
+  if (oneOfManyOptParams.filter((param) => keys.includes(param)).length > 1) {
+    res.status(400);
+    throw new Error(
+      `Bad request, Only one of the following params: ${oneOfManyOptParams.join(
+        ", "
+      )} can be provided.`
     );
   }
 
@@ -95,4 +134,36 @@ export const validateArrayEnum = (res, payload, validDict) => {
   );
 
   return [...new Set(normalizedElts)];
+};
+
+export const verifyMongoId = (res, payload) => {
+  const key = Object.keys(payload)[0];
+  const value = Object.values(payload)[0];
+
+  if (!mongoose.isObjectIdOrHexString(value)) {
+    res.status(400);
+
+    throw new Error(`Bad request, the value of ${key} is not a valid BSON id!`);
+  }
+};
+
+export const verifyNumericParams = (res, payload) => {
+  const key = Object.keys(payload)[0];
+  const value = Object.values(payload)[0];
+
+  if (isNaN(value)) {
+    res.status(400);
+
+    throw new Error(`Bad request, the value of ${key} must be numeric!`);
+  }
+};
+
+export const verifyBoolean = (res, payload) => {
+  const key = Object.keys(payload)[0];
+  const value = Object.values(payload)[0];
+
+  if (typeof value !== "boolean") {
+    res.status(400);
+    throw new Error(`Bad request, the ${key} parameter must be a boolean`);
+  }
 };
