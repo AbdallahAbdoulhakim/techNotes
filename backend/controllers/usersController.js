@@ -71,7 +71,7 @@ export const getUser = expressAsyncHandler(async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    verifyMongoId(res, { id });
+    verifyMongoId(res, { user: id });
 
     const foundUser = await userModel.findById(id);
 
@@ -108,7 +108,7 @@ export const getUsers = expressAsyncHandler(async (req, res, next) => {
   try {
     const users = await userModel.find().select("-password -__v");
 
-    if (!users) {
+    if (!users?.length) {
       res.status(404);
       throw new Error("No users Found!");
     }
@@ -137,11 +137,18 @@ export const getUsers = expressAsyncHandler(async (req, res, next) => {
 // @access Private
 export const updateUser = expressAsyncHandler(async (req, res, next) => {
   try {
-    verifyMongoId(res, req.params);
-    const { id } = req.params;
-
     let body = req.body;
-    verifyParams(res, body, [], ["username", "password", "roles", "active"]);
+
+    verifyParams(
+      res,
+      body,
+      ["id"],
+      ["username", "password", "roles", "active"]
+    );
+
+    verifyMongoId(res, { user: body.id });
+
+    const { id } = body;
 
     if (body?.roles) {
       const normalizedRoles = validateArrayEnum(
@@ -201,26 +208,38 @@ export const updateUser = expressAsyncHandler(async (req, res, next) => {
 // @access Private
 export const deleteUser = expressAsyncHandler(async (req, res, next) => {
   try {
-    verifyMongoId(res, req.params);
-    const { id } = req.params;
+    verifyParams(res, req.body, [], [], ["id", "username"]);
 
-    const notes = await noteModel.find({ user: id });
+    let userToDelete;
+
+    if (req.body?.id) {
+      verifyMongoId(res, { user: req.body.id });
+      userToDelete = await userModel.findOne({ _id: req.body.id }).exec();
+    }
+
+    if (req.body?.username) {
+      userToDelete = await userModel
+        .findOne({ username: req.body.username })
+        .exec();
+    }
+
+    if (!userToDelete) {
+      res.status(404);
+      throw new Error(`User Not Found!`);
+    }
+
+    const notes = await noteModel.find({ user: userToDelete });
 
     if (notes.length) {
       res.status(409);
       throw new Error(`User has assigned notes`);
     }
 
-    const deletedUser = await userModel.findByIdAndDelete(id);
-
-    if (!deletedUser) {
-      res.status(404);
-      throw new Error(`User Not Found!`);
-    }
+    await userToDelete.deleteOne();
 
     res.status(200).json({
       success: true,
-      message: `User ${deletedUser.username} deleted successfully!`,
+      message: `User ${userToDelete.username} deleted successfully!`,
     });
   } catch (error) {
     next(error);

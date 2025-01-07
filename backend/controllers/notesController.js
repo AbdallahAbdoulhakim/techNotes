@@ -14,13 +14,13 @@ export const createNote = expressAsyncHandler(async (req, res, next) => {
       req.body,
       ["title", "text"],
       ["completed"],
-      ["user", "userId"]
+      ["username", "userId"]
     );
 
     let body = req.body;
 
-    if (body?.user) {
-      const foundUser = await userModel.findOne({ username: body.user });
+    if (body?.username) {
+      const foundUser = await userModel.findOne({ username: body.username });
 
       if (!foundUser) {
         res.status(404);
@@ -56,6 +56,7 @@ export const createNote = expressAsyncHandler(async (req, res, next) => {
         ticket: newNote.ticket,
         title: newNote.title,
         text: newNote.text,
+        completed: newNote.completed,
         user: {
           id: newNote.user._id,
           username: newNote.user.username,
@@ -69,22 +70,22 @@ export const createNote = expressAsyncHandler(async (req, res, next) => {
 
 export const updateNote = expressAsyncHandler(async (req, res, next) => {
   try {
-    verifyNumericParams(res, req.params);
-    const { ticket } = req.params;
-
     verifyParams(
       res,
       req.body,
-      [],
+      ["ticket"],
       ["title", "text", "completed"],
       [],
-      ["user", "userId"]
+      ["username", "userId"]
     );
+
+    const { ticket } = req.body;
+    verifyNumericParams(res, { ticket });
 
     let body = req.body;
 
-    if (body?.user) {
-      const foundUser = await userModel.findOne({ username: body.user });
+    if (body?.username) {
+      const foundUser = await userModel.findOne({ username: body.username });
 
       if (!foundUser) {
         res.status(404);
@@ -112,7 +113,7 @@ export const updateNote = expressAsyncHandler(async (req, res, next) => {
 
     const updatedNote = await (
       await noteModel.findOneAndUpdate({ ticket }, { ...body }, { new: true })
-    ).populate("user");
+    )?.populate("user");
 
     if (!updatedNote) {
       res.status(404);
@@ -125,6 +126,7 @@ export const updateNote = expressAsyncHandler(async (req, res, next) => {
         ticket: updatedNote.ticket,
         title: updatedNote.title,
         text: updatedNote.text,
+        completed: updatedNote.completed,
         user: {
           id: updatedNote.user._id,
           username: updatedNote.user.username,
@@ -144,7 +146,7 @@ export const getNote = expressAsyncHandler(async (req, res, next) => {
 
     const foundNote = await (
       await noteModel.findOne({ ticket })
-    ).populate("user");
+    )?.populate("user");
 
     if (!foundNote) {
       res.status(404);
@@ -157,6 +159,7 @@ export const getNote = expressAsyncHandler(async (req, res, next) => {
         ticket: foundNote.ticket,
         title: foundNote.title,
         text: foundNote.text,
+        completed: foundNote.completed,
         user: {
           id: foundNote.user._id,
           username: foundNote.user.username,
@@ -172,13 +175,14 @@ export const getNote = expressAsyncHandler(async (req, res, next) => {
 
 export const deleteNote = expressAsyncHandler(async (req, res, next) => {
   try {
-    verifyNumericParams(res, req.params);
+    verifyParams(res, req.body, ["ticket"]);
+    const { ticket } = req.body;
 
-    const { ticket } = req.params;
+    verifyNumericParams(res, { ticket });
 
     const deletedNote = await (
       await noteModel.findOneAndDelete({ ticket })
-    ).populate("user");
+    )?.populate("user");
 
     if (!deletedNote) {
       res.status(404);
@@ -187,17 +191,6 @@ export const deleteNote = expressAsyncHandler(async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      data: {
-        ticket: deletedNote.ticket,
-        title: deletedNote.title,
-        text: deletedNote.text,
-        user: {
-          id: deletedNote.user._id,
-          username: deletedNote.user.username,
-        },
-        createdAt: deletedNote.createdAt,
-        updatedAt: deletedNote.updatedAt,
-      },
       message: `Note N°${deletedNote.ticket} deleted successfully!`,
     });
   } catch (error) {
@@ -215,6 +208,7 @@ export const getNotes = expressAsyncHandler(async (req, res, next) => {
         ticket: note.ticket,
         title: note.title,
         text: note.text,
+        completed: note.completed,
         user: {
           id: note.user._id,
           username: note.user.username,

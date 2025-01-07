@@ -141,9 +141,9 @@ export const verifyMongoId = (res, payload) => {
   const value = Object.values(payload)[0];
 
   if (!mongoose.isObjectIdOrHexString(value)) {
-    res.status(400);
+    res.status(404);
 
-    throw new Error(`Bad request, the value of ${key} is not a valid BSON id!`);
+    throw new Error(`${key} was not found!`);
   }
 };
 
