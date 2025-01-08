@@ -6,7 +6,7 @@ const Footer = () => {
       <div className="mx-auto max-w-screen-xl text-center">
         <Link
           to="/"
-          className="flex justify-center items-center text-2xl font-semibold text-gray-900 dark:text-white"
+          className="flex justify-center items-center md:text-2xl text-base font-semibold text-gray-900 dark:text-white"
         >
           <svg
             className="mr-2 h-8"
@@ -154,11 +154,11 @@ const Footer = () => {
           </svg>
           TechNotes
         </Link>
-        <p className="my-6 text-gray-500 dark:text-gray-400">
+        <p className="my-6 text-sm md:text-base text-gray-500 dark:text-gray-400">
           Open-source library of over 400+ web components and interactive
           elements built for better web.
         </p>
-        <ul className="flex flex-wrap justify-center items-center mb-6 text-gray-900 dark:text-white">
+        <ul className="flex flex-wrap justify-center items-center text-sm md:text-base mb-6 text-gray-900 dark:text-white">
           <li>
             <Link to="/" className="mr-4 hover:underline md:mr-6 ">
               About
