@@ -8,6 +8,10 @@ import Err404 from "./components/Public/Err404";
 import Welcome from "./features/auth/Welcome";
 import NotesList from "./features/notes/NotesList";
 import UsersList from "./features/users/UsersList";
+import CreateNewUser from "./features/users/CreateNewUser";
+import EditUser from "./features/users/EditUser";
+import CreateNewNote from "./features/notes/CreateNewNote";
+import EditNote from "./features/notes/EditNote";
 
 const App = () => {
   return (
@@ -20,9 +24,13 @@ const App = () => {
           <Route index element={<Welcome />} />
           <Route path="notes">
             <Route index element={<NotesList />} />
+            <Route path="new" element={<CreateNewNote />} />
+            <Route path="edit" element={<EditNote />} />
           </Route>
           <Route path="users">
             <Route index element={<UsersList />} />
+            <Route path="new" element={<CreateNewUser />} />
+            <Route path="edit" element={<EditUser />} />
           </Route>
           <Route path="*" element={<Err404 home="/dash" />} />
         </Route>

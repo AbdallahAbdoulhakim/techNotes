@@ -15,7 +15,7 @@ const DashLayout = () => {
       <div className="antialiased bg-gray-50 dark:bg-gray-900 flex flex-col min-h-screen">
         <DashHeader />
         <Aside />
-        <main className="p-4 md:ml-64 h-auto pt-20">
+        <main className="p-4 md:ml-64 h-auto pt-20 flex flex-col">
           <Outlet />
           <DashFooter />
         </main>

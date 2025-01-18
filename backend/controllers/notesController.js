@@ -61,6 +61,8 @@ export const createNote = expressAsyncHandler(async (req, res, next) => {
           id: newNote.user._id,
           username: newNote.user.username,
         },
+        createdAt: newNote.createdAt,
+        updatedAt: newNote.updatedAt,
       },
     });
   } catch (error) {
@@ -131,6 +133,8 @@ export const updateNote = expressAsyncHandler(async (req, res, next) => {
           id: updatedNote.user._id,
           username: updatedNote.user.username,
         },
+        createdAt: updatedNote.createdAt,
+        updatedAt: updatedNote.updatedAt,
       },
     });
   } catch (error) {
@@ -213,6 +217,8 @@ export const getNotes = expressAsyncHandler(async (req, res, next) => {
           id: note.user._id,
           username: note.user.username,
         },
+        createdAt: note.createdAt,
+        updatedAt: note.updatedAt,
       })),
     });
   } catch (error) {

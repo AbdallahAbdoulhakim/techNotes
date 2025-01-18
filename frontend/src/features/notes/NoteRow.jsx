@@ -1,4 +1,6 @@
 import { Link } from "react-router-dom";
+import { FaCheckDouble } from "react-icons/fa";
+import { FiSlash } from "react-icons/fi";
 
 import { useSelector } from "react-redux";
 
@@ -6,8 +8,24 @@ import { selectNoteById } from "./notesApiSlice";
 
 const NoteRow = ({ noteId }) => {
   const note = useSelector((state) => selectNoteById(state, noteId));
+  console.log(note);
 
   if (note) {
+    const created = new Date(note.createdAt).toLocaleString("fr-FR", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+    });
+    const updated = new Date(note.createdAt).toLocaleString("fr-FR", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+    });
+
     return (
       <tr className="border-b dark:border-gray-700 table-row">
         <th
@@ -16,9 +34,17 @@ const NoteRow = ({ noteId }) => {
         >
           {note.ticket}
         </th>
+        <td className="px-4 py-3">
+          {note.completed ? (
+            <FaCheckDouble className="text-green-600" size={25} />
+          ) : (
+            <FiSlash className="text-red-600" size={25} />
+          )}
+        </td>
         <td className="px-4 py-3">{note.title}</td>
-        <td className="px-4 py-3">{note.text}</td>
-        <td className="px-4 py-3">{note.user.username}</td>
+        <td className="px-4 py-3 hidden md:table-cell">{note.user.username}</td>
+        <td className="px-4 py-3 hidden lg:table-cell">{created}</td>
+        <td className="px-4 py-3 hidden lg:table-cell">{updated}</td>
         <td className="px-4 py-3 flex items-center justify-end">
           <button
             id={`${noteId}-dropdown-button`}
