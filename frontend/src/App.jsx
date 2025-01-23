@@ -24,13 +24,13 @@ const App = () => {
           <Route index element={<Welcome />} />
           <Route path="notes">
             <Route index element={<NotesList />} />
-            <Route path="new" element={<CreateNewNote />} />
-            <Route path="edit" element={<EditNote />} />
+            <Route exact path="new" element={<CreateNewNote />} />
+            <Route path=":id" element={<EditNote />} />
           </Route>
           <Route path="users">
             <Route index element={<UsersList />} />
-            <Route path="new" element={<CreateNewUser />} />
-            <Route path="edit" element={<EditUser />} />
+            <Route exact path="new" element={<CreateNewUser />} />
+            <Route path=":id" element={<EditUser />} />
           </Route>
           <Route path="*" element={<Err404 home="/dash" />} />
         </Route>

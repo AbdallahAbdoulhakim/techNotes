@@ -1,6 +1,6 @@
 import { Dismiss } from "flowbite";
 
-const AlertError = ({ code, message }) => {
+const AlertError = ({ code = "", message }) => {
   return (
     <div
       id="alert-additional-content-2"
@@ -20,7 +20,11 @@ const AlertError = ({ code, message }) => {
         <span className="sr-only">Info</span>
         <h3 className="text-lg font-medium">Error {code}</h3>
       </div>
-      <div className="mt-2 mb-4 text-sm">{message}</div>
+      <ul className="mt-2 mb-4 text-sm list-disc list-inside">
+        {message?.map((msg) => (
+          <li>{msg}</li>
+        ))}
+      </ul>
     </div>
   );
 };

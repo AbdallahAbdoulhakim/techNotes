@@ -1,9 +1,8 @@
-import { Link } from "react-router-dom";
 import { CiEdit } from "react-icons/ci";
 
 import { useGetUsersQuery } from "./usersApiSlice";
 import AlertError from "../../components/AlertError";
-import Spinner from "../../components/Public/Spinner";
+import Spinner from "../../components/Spinner";
 import UserRow from "./UserRow";
 
 import { Dropdown } from "flowbite";
@@ -30,9 +29,9 @@ const UsersList = () => {
     content = (
       <AlertError
         code={error?.originalStatus || "Unkown"}
-        message={
-          error?.error || error?.data?.message || "Something went wrong!"
-        }
+        message={[
+          error?.error || error?.data?.message || "Something went wrong!",
+        ]}
       />
     );
   }

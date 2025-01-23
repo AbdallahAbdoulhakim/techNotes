@@ -1,9 +1,8 @@
-import { Link } from "react-router-dom";
 import { CiEdit } from "react-icons/ci";
 
 import { useGetNotesQuery } from "./notesApiSlice";
 import AlertError from "../../components/AlertError";
-import Spinner from "../../components/Public/Spinner";
+import Spinner from "../../components/Spinner";
 import NoteRow from "./NoteRow";
 
 import { Dropdown } from "flowbite";
@@ -30,9 +29,9 @@ const NotesList = () => {
     content = (
       <AlertError
         code={error?.originalStatus || "Unkown"}
-        message={
-          error?.error || error?.data?.message || "Something went wrong!"
-        }
+        message={[
+          error?.error || error?.data?.message || "Something went wrong!",
+        ]}
       />
     );
   }
