@@ -8,7 +8,6 @@ import { selectNoteById } from "./notesApiSlice";
 
 const NoteRow = ({ noteId }) => {
   const note = useSelector((state) => selectNoteById(state, noteId));
-  console.log(note);
 
   if (note) {
     const created = new Date(note.createdAt).toLocaleString("fr-FR", {

@@ -12,6 +12,7 @@ import CreateNewUser from "./features/users/CreateNewUser";
 import EditUser from "./features/users/EditUser";
 import CreateNewNote from "./features/notes/CreateNewNote";
 import EditNote from "./features/notes/EditNote";
+import Prefetch from "./features/auth/Prefetch";
 
 const App = () => {
   return (
@@ -20,20 +21,23 @@ const App = () => {
         <Route index element={<Public />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="dash" element={<DashLayout />}>
-          <Route index element={<Welcome />} />
-          <Route path="notes">
-            <Route index element={<NotesList />} />
-            <Route exact path="new" element={<CreateNewNote />} />
-            <Route path=":id" element={<EditNote />} />
+        <Route element={<Prefetch />}>
+          <Route path="dash" element={<DashLayout />}>
+            <Route index element={<Welcome />} />
+            <Route path="notes">
+              <Route index element={<NotesList />} />
+              <Route exact path="new" element={<CreateNewNote />} />
+              <Route path=":id" element={<EditNote />} />
+            </Route>
+            <Route path="users">
+              <Route index element={<UsersList />} />
+              <Route exact path="new" element={<CreateNewUser />} />
+              <Route path=":id" element={<EditUser />} />
+            </Route>
+            <Route path="*" element={<Err404 home="/dash" />} />
           </Route>
-          <Route path="users">
-            <Route index element={<UsersList />} />
-            <Route exact path="new" element={<CreateNewUser />} />
-            <Route path=":id" element={<EditUser />} />
-          </Route>
-          <Route path="*" element={<Err404 home="/dash" />} />
         </Route>
+
         <Route path="*" element={<Err404 />} />
       </Route>
     </Routes>

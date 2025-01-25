@@ -10,6 +10,8 @@ import { useEffect } from "react";
 import ListHeader from "../../components/Dash/ListHeader";
 import ListFooter from "../../components/Dash/ListFooter";
 
+import { ROLES } from "../../config/roles";
+
 const UsersList = () => {
   const {
     data: users,
@@ -17,7 +19,11 @@ const UsersList = () => {
     isSuccess,
     isError,
     error,
-  } = useGetUsersQuery();
+  } = useGetUsersQuery(null, {
+    pollingInterval: 60000,
+    refetchOnFocus: true,
+    refetchOnMountOrArgChange: true,
+  });
 
   let content;
 
@@ -45,7 +51,12 @@ const UsersList = () => {
 
     content = (
       <div className="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
-        <ListHeader entity="user" addLink="/dash/users/new" />
+        <ListHeader
+          entity="user"
+          addLink="/dash/users/new"
+          filterBy="role"
+          filterElts={Object.values(ROLES)}
+        />
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">

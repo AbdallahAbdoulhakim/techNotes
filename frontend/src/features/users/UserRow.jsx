@@ -1,10 +1,11 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { useSelector } from "react-redux";
 
 import { selectUserById } from "./usersApiSlice";
 
 const UserRow = ({ userId }) => {
+  const navigate = useNavigate();
   const user = useSelector((state) => selectUserById(state, userId));
 
   if (user) {
@@ -15,8 +16,10 @@ const UserRow = ({ userId }) => {
         }`}
       >
         <th
+          onClick={() => navigate(`/dash/users/${userId}`)}
+          style={{ cursor: "pointer" }}
           scope="row"
-          className="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+          className="px-4 py-3 hover:underline font-medium text-gray-900 whitespace-nowrap dark:text-white"
         >
           {user.username}
         </th>
