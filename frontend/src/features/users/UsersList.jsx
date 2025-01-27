@@ -6,14 +6,18 @@ import Spinner from "../../components/Spinner";
 import UserRow from "./UserRow";
 
 import { Dropdown } from "flowbite";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import ListHeader from "../../components/Dash/ListHeader";
 import ListFooter from "../../components/Dash/ListFooter";
 
 import { ROLES } from "../../config/roles";
 import DeleteItem from "../../components/Dash/DeleteItem";
 
+import { useDeleteUserMutation } from "./usersApiSlice";
+
 const UsersList = () => {
+  const [deleteUser] = useDeleteUserMutation();
+
   const {
     data: users,
     isLoading,
@@ -25,6 +29,8 @@ const UsersList = () => {
     refetchOnFocus: true,
     refetchOnMountOrArgChange: true,
   });
+
+  const [itemToDelete, setItemToDelete] = useState(null);
 
   let content;
 
@@ -47,7 +53,13 @@ const UsersList = () => {
     const { ids } = users;
 
     const tabContent = ids?.length
-      ? ids.map((userId) => <UserRow key={userId} userId={userId} />)
+      ? ids.map((userId) => (
+          <UserRow
+            key={userId}
+            setItemToDelete={setItemToDelete}
+            userId={userId}
+          />
+        ))
       : null;
 
     content = (
@@ -81,7 +93,13 @@ const UsersList = () => {
           </table>
         </div>
         <ListFooter />
-        <DeleteItem item="user" itemTitle="itemToDelete" />
+        <DeleteItem
+          item="user"
+          itemTitle={itemToDelete?.username}
+          handleAction={async () => {
+            await deleteUser({ id: itemToDelete?.id });
+          }}
+        />
       </div>
     );
   }

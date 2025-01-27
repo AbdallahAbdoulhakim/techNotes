@@ -7,8 +7,9 @@ import { selectUserById } from "./usersApiSlice";
 import { Dropdown, Modal } from "flowbite";
 
 import { useEffect, useRef } from "react";
+import { useDeleteUserMutation } from "./usersApiSlice";
 
-const UserRow = ({ userId }) => {
+const UserRow = ({ userId, setItemToDelete }) => {
   const navigate = useNavigate();
   const user = useSelector((state) => selectUserById(state, userId));
   const deleteRef = useRef();
@@ -34,7 +35,23 @@ const UserRow = ({ userId }) => {
 
     const modal = new Modal($modalTargetEl, modalOptions, modalInstanceOptions);
 
-    deleteRef.current?.addEventListener("click", () => modal.show());
+    deleteRef.current?.addEventListener("click", () => {
+      const backdrop = document.querySelector(".deleteModalBackDrop");
+      if (!backdrop) {
+        const backdropHTML = document.createElement("div");
+        backdropHTML.classList.add(
+          "bg-gray-900/50",
+          "dark:bg-gray-900/80",
+          "fixed",
+          "inset-0",
+          "z-40",
+          "deleteModalBackDrop"
+        );
+        document.body.appendChild(backdropHTML);
+      }
+      setItemToDelete(user);
+      modal.show();
+    });
 
     if (user) {
       const $targetEl = document.getElementById(`${user?.id}-dropdown`);
@@ -57,7 +74,7 @@ const UserRow = ({ userId }) => {
 
       new Dropdown($targetEl, $triggerEl, options, instanceOptions);
     }
-  }, [user]);
+  }, [setItemToDelete, user]);
 
   if (user) {
     return (

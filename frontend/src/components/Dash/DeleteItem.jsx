@@ -1,9 +1,12 @@
 import { useEffect, useRef } from "react";
 import { Modal } from "flowbite";
+import { useNavigate } from "react-router-dom";
 
 const DeleteItem = ({ item, itemTitle, handleAction }) => {
   const closeRef = useRef();
   const cancelRef = useRef();
+  const confirmRef = useRef();
+  const navigate = useNavigate();
 
   useEffect(() => {
     // set the modal menu element
@@ -18,20 +21,6 @@ const DeleteItem = ({ item, itemTitle, handleAction }) => {
       onHide: () => {
         document.querySelector(".deleteModalBackDrop")?.remove();
       },
-      onShow: () => {
-        const backdrop = document.querySelector(".deleteModalBackDrop");
-        if (!backdrop) {
-          const backdropHTML = document.createElement("div");
-          backdropHTML.classList.add(
-            "bg-gray-900/50",
-            "dark:bg-gray-900/80",
-            "fixed",
-            "inset-0",
-            "z-40",
-            "deleteModalBackDrop"
-          );
-        }
-      },
     };
 
     // instance options object
@@ -44,12 +33,22 @@ const DeleteItem = ({ item, itemTitle, handleAction }) => {
 
     cancelRef.current?.addEventListener("click", () => {
       modal.hide();
+      document.querySelector(".deleteModalBackDrop")?.remove();
     });
 
     closeRef.current?.addEventListener("click", () => {
       modal.hide();
+      document.querySelector(".deleteModalBackDrop")?.remove();
     });
-  }, []);
+
+    confirmRef.current?.addEventListener("click", () => {
+      handleAction();
+      modal.hide();
+      document.querySelector(".deleteModalBackDrop")?.remove();
+      navigate("/dash/users");
+    });
+  }, [handleAction, navigate]);
+
   return (
     <div
       id="deleteModal"
@@ -106,7 +105,7 @@ const DeleteItem = ({ item, itemTitle, handleAction }) => {
               No, cancel
             </button>
             <button
-              onClick={handleAction}
+              ref={confirmRef}
               type="submit"
               className="py-2 px-3 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-900"
             >
