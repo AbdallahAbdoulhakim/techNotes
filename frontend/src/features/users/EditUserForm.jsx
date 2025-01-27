@@ -1,8 +1,10 @@
 import { ROLES } from "../../config/roles";
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import AlertError from "../../components/AlertError";
 import { useDeleteUserMutation, useUpdateUserMutation } from "./usersApiSlice";
+import DeleteItem from "../../components/Dash/DeleteItem";
+import { Modal } from "flowbite";
 
 const EditUserForm = ({ user }) => {
   const [username, setUsername] = useState(user?.username);
@@ -129,6 +131,32 @@ const EditUserForm = ({ user }) => {
       navigate("/dash/users");
     }
   }, [isSuccess, isDelSuccess, navigate]);
+
+  const deleteRef = useRef();
+
+  useEffect(() => {
+    // set the modal menu element
+    const $modalTargetEl = document.getElementById("deleteModal");
+
+    // options with default values
+    const modalOptions = {
+      placement: "bottom-right",
+      backdrop: "dynamic",
+      backdropClasses:
+        "bg-gray-900/50 dark:bg-gray-900/80 fixed inset-0 z-40 deleteModalBackDrop",
+      closable: true,
+    };
+
+    // instance options object
+    const modalInstanceOptions = {
+      id: "deleteModal",
+      override: true,
+    };
+
+    const modal = new Modal($modalTargetEl, modalOptions, modalInstanceOptions);
+
+    deleteRef.current?.addEventListener("click", () => modal.show());
+  }, []);
 
   return (
     <div
@@ -272,7 +300,7 @@ const EditUserForm = ({ user }) => {
               </button>
               <button
                 type="button"
-                onClick={onDeleteUserClicked}
+                ref={deleteRef}
                 className="text-red-600 inline-flex items-center hover:text-white border border-red-600 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900"
               >
                 <svg
@@ -293,6 +321,7 @@ const EditUserForm = ({ user }) => {
           </form>
         </div>
       </div>
+      <DeleteItem item="user" itemTitle={user?.username} />
     </div>
   );
 };

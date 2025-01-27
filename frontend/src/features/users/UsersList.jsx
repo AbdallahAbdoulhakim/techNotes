@@ -11,6 +11,7 @@ import ListHeader from "../../components/Dash/ListHeader";
 import ListFooter from "../../components/Dash/ListFooter";
 
 import { ROLES } from "../../config/roles";
+import DeleteItem from "../../components/Dash/DeleteItem";
 
 const UsersList = () => {
   const {
@@ -80,6 +81,7 @@ const UsersList = () => {
           </table>
         </div>
         <ListFooter />
+        <DeleteItem item="user" itemTitle="itemToDelete" />
       </div>
     );
   }

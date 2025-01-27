@@ -2,12 +2,40 @@ import { Link } from "react-router-dom";
 import { FaCheckDouble } from "react-icons/fa";
 import { FiSlash } from "react-icons/fi";
 
+import { useEffect } from "react";
+
 import { useSelector } from "react-redux";
 
 import { selectNoteById } from "./notesApiSlice";
 
+import { Dropdown } from "flowbite";
+
 const NoteRow = ({ noteId }) => {
   const note = useSelector((state) => selectNoteById(state, noteId));
+
+  useEffect(() => {
+    if (note) {
+      const $targetEl = document.getElementById(`${note?.id}-dropdown`);
+      const $triggerEl = document.getElementById(`${note?.id}-dropdown-button`);
+
+      const options = {
+        placement: "bottom",
+        triggerType: "click",
+        offsetSkidding: 0,
+        offsetDistance: 10,
+        delay: 300,
+        ignoreClickOutsideClass: false,
+      };
+
+      // instance options object
+      const instanceOptions = {
+        id: `${note?.id}-dropdown`,
+        override: true,
+      };
+
+      new Dropdown($targetEl, $triggerEl, options, instanceOptions);
+    }
+  }, [note]);
 
   if (note) {
     const created = new Date(note.createdAt).toLocaleString("fr-FR", {
