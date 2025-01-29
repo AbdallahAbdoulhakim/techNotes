@@ -4,11 +4,14 @@ import { useGetNotesQuery } from "./notesApiSlice";
 import AlertError from "../../components/AlertError";
 import Spinner from "../../components/Spinner";
 import NoteRow from "./NoteRow";
+import DeleteItem from "../../components/Dash/DeleteItem";
 
 import { Dropdown } from "flowbite";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import ListHeader from "../../components/Dash/ListHeader";
 import ListFooter from "../../components/Dash/ListFooter";
+
+import { useDeleteNoteMutation } from "./notesApiSlice";
 
 const NotesList = () => {
   const {
@@ -22,6 +25,13 @@ const NotesList = () => {
     refetchOnFocus: true,
     refetchOnMountOrArgChange: true,
   });
+
+  const [itemToDelete, setItemToDelete] = useState(null);
+
+  const [
+    deleteNote,
+    { isSuccess: isDelSuccess, error: delError, isError: isDelError },
+  ] = useDeleteNoteMutation();
 
   let content;
 
@@ -44,12 +54,21 @@ const NotesList = () => {
     const { ids } = notes;
 
     const tabContent = ids?.length
-      ? ids.map((noteId) => <NoteRow key={noteId} noteId={noteId} />)
+      ? ids.map((noteId) => (
+          <NoteRow
+            key={noteId}
+            noteId={noteId}
+            setItemToDelete={setItemToDelete}
+          />
+        ))
       : null;
 
     content = (
       <div className="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
         <ListHeader entity="note" addLink="/dash/notes/new" />
+        {isDelError && (
+          <AlertError message={[delError?.data?.error]} dismissible={true} />
+        )}
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -82,6 +101,13 @@ const NotesList = () => {
           </table>
         </div>
         <ListFooter />
+        <DeleteItem
+          item="note"
+          itemTitle={itemToDelete?.title}
+          handleAction={async () => await deleteNote({ id: itemToDelete?.id })}
+          isDelError={isDelError}
+          isDelSuccess={isDelSuccess}
+        />
       </div>
     );
   }

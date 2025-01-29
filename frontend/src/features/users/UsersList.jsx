@@ -16,8 +16,6 @@ import DeleteItem from "../../components/Dash/DeleteItem";
 import { useDeleteUserMutation } from "./usersApiSlice";
 
 const UsersList = () => {
-  const [deleteUser] = useDeleteUserMutation();
-
   const {
     data: users,
     isLoading,
@@ -31,6 +29,10 @@ const UsersList = () => {
   });
 
   const [itemToDelete, setItemToDelete] = useState(null);
+  const [
+    deleteUser,
+    { isSuccess: isDelSuccess, error: delError, isError: isDelError },
+  ] = useDeleteUserMutation();
 
   let content;
 
@@ -41,7 +43,7 @@ const UsersList = () => {
   if (isError) {
     content = (
       <AlertError
-        code={error?.originalStatus || "Unkown"}
+        code={error?.originalStatus || "Unknown"}
         message={[
           error?.error || error?.data?.message || "Something went wrong!",
         ]}
@@ -56,8 +58,8 @@ const UsersList = () => {
       ? ids.map((userId) => (
           <UserRow
             key={userId}
-            setItemToDelete={setItemToDelete}
             userId={userId}
+            setItemToDelete={setItemToDelete}
           />
         ))
       : null;
@@ -70,6 +72,9 @@ const UsersList = () => {
           filterBy="role"
           filterElts={Object.values(ROLES)}
         />
+        {isDelError && (
+          <AlertError message={[delError?.data?.error]} dismissible={true} />
+        )}
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -96,9 +101,9 @@ const UsersList = () => {
         <DeleteItem
           item="user"
           itemTitle={itemToDelete?.username}
-          handleAction={async () => {
-            await deleteUser({ id: itemToDelete?.id });
-          }}
+          handleAction={async () => await deleteUser({ id: itemToDelete?.id })}
+          isDelError={isDelError}
+          isDelSuccess={isDelSuccess}
         />
       </div>
     );

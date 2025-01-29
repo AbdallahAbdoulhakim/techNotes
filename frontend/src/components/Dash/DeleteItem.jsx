@@ -2,11 +2,19 @@ import { useEffect, useRef } from "react";
 import { Modal } from "flowbite";
 import { useNavigate } from "react-router-dom";
 
-const DeleteItem = ({ item, itemTitle, handleAction }) => {
+const DeleteItem = ({
+  item,
+  itemTitle,
+  handleAction,
+  isDelError,
+  isDelSuccess,
+}) => {
   const closeRef = useRef();
   const cancelRef = useRef();
   const confirmRef = useRef();
   const navigate = useNavigate();
+
+  console.log(isDelSuccess);
 
   useEffect(() => {
     // set the modal menu element
@@ -41,13 +49,22 @@ const DeleteItem = ({ item, itemTitle, handleAction }) => {
       document.querySelector(".deleteModalBackDrop")?.remove();
     });
 
-    confirmRef.current?.addEventListener("click", () => {
-      handleAction();
+    confirmRef.current?.addEventListener("click", async () => {
+      await handleAction();
       modal.hide();
       document.querySelector(".deleteModalBackDrop")?.remove();
-      navigate("/dash/users");
+
+      if (isDelSuccess) {
+        navigate(`/dash/${item}s`);
+      }
+
+      if (isDelError) {
+        return;
+      } else {
+        navigate(`/dash/${item}s`);
+      }
     });
-  }, [handleAction, navigate]);
+  }, [handleAction, isDelError, isDelSuccess, item, navigate]);
 
   return (
     <div

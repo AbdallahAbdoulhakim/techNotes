@@ -179,13 +179,13 @@ export const getNote = expressAsyncHandler(async (req, res, next) => {
 
 export const deleteNote = expressAsyncHandler(async (req, res, next) => {
   try {
-    verifyParams(res, req.body, ["ticket"]);
-    const { ticket } = req.body;
+    verifyParams(res, req.body, ["id"]);
+    const { id } = req.body;
 
-    verifyNumericParams(res, { ticket });
+    verifyNumericParams(res, { id });
 
     const deletedNote = await (
-      await noteModel.findOneAndDelete({ ticket })
+      await noteModel.findOneAndDelete({ ticket: id })
     )?.populate("user");
 
     if (!deletedNote) {

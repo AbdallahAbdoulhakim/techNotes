@@ -29,7 +29,12 @@ const EditUserForm = ({ user }) => {
 
   const [
     deleteUser,
-    { isSuccess: isDelSuccess, isError: isDelError, error: delError },
+    {
+      isSuccess: isDelSuccess,
+      isLoading: isDelLoading,
+      isError: isDelError,
+      error: delError,
+    },
   ] = useDeleteUserMutation();
 
   const navigate = useNavigate();
@@ -188,10 +193,14 @@ const EditUserForm = ({ user }) => {
             </h3>
           </div>
           {formError && <AlertError message={errorMsg()} />}
-          {isError && <AlertError message={[error?.data?.error]} />}
-          {isDelError && <AlertError message={[delError?.data?.error]} />}
+          {isError && (
+            <AlertError message={[error?.data?.error]} dismissible={true} />
+          )}
+          {isDelError && (
+            <AlertError message={[delError?.data?.error]} dismissible={true} />
+          )}
 
-          {isLoading ? (
+          {isLoading || isDelLoading ? (
             <Spinner />
           ) : (
             <form onSubmit={handleSubmit}>
@@ -347,6 +356,7 @@ const EditUserForm = ({ user }) => {
         itemTitle={user?.username}
         handleAction={onDeleteUserClicked}
         isDelSuccess={isDelSuccess}
+        isDelError={isDelError}
       />
     </div>
   );

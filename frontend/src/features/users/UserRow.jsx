@@ -7,7 +7,6 @@ import { selectUserById } from "./usersApiSlice";
 import { Dropdown, Modal } from "flowbite";
 
 import { useEffect, useRef } from "react";
-import { useDeleteUserMutation } from "./usersApiSlice";
 
 const UserRow = ({ userId, setItemToDelete }) => {
   const navigate = useNavigate();

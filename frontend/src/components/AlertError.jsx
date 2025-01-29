@@ -1,9 +1,34 @@
 import { Dismiss } from "flowbite";
+import { useEffect } from "react";
 
-const AlertError = ({ code = "", message }) => {
+const AlertError = ({ code = "", message, dismissible = false }) => {
+  useEffect(() => {
+    const $targetEl = document.getElementById("alert-fetch-error");
+
+    const options = {
+      transition: "transition-opacity",
+      duration: 1000,
+      timing: "ease-out",
+    };
+
+    // instance options object
+    const instanceOptions = {
+      id: "alert-fetch-error",
+      override: true,
+    };
+
+    const alert = new Dismiss($targetEl, null, options, instanceOptions);
+
+    if (dismissible) {
+      const timeoutId = setTimeout(() => alert.hide(), 5000);
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [dismissible]);
+
   return (
     <div
-      id="alert-additional-content-2"
+      id="alert-fetch-error"
       className="p-4 mb-4 text-red-800 border border-red-300 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800"
       role="alert"
     >
@@ -21,8 +46,8 @@ const AlertError = ({ code = "", message }) => {
         <h3 className="text-lg font-medium">Error {code}</h3>
       </div>
       <ul className="mt-2 mb-4 text-sm list-disc list-inside">
-        {message?.map((msg) => (
-          <li>{msg}</li>
+        {message?.map((msg, key) => (
+          <li key={`msg-${key}`}>{msg}</li>
         ))}
       </ul>
     </div>

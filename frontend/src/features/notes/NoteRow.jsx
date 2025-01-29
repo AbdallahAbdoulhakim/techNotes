@@ -2,18 +2,57 @@ import { Link } from "react-router-dom";
 import { FaCheckDouble } from "react-icons/fa";
 import { FiSlash } from "react-icons/fi";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 import { useSelector } from "react-redux";
 
 import { selectNoteById } from "./notesApiSlice";
 
-import { Dropdown } from "flowbite";
+import { Dropdown, Modal } from "flowbite";
 
-const NoteRow = ({ noteId }) => {
+const NoteRow = ({ noteId, setItemToDelete }) => {
   const note = useSelector((state) => selectNoteById(state, noteId));
+  const deleteRef = useRef();
 
   useEffect(() => {
+    // set the modal menu element
+    const $modalTargetEl = document.getElementById("deleteModal");
+
+    // options with default values
+    const modalOptions = {
+      placement: "bottom-right",
+      backdrop: "dynamic",
+      backdropClasses:
+        "bg-gray-900/50 dark:bg-gray-900/80 fixed inset-0 z-40 deleteModalBackDrop",
+      closable: true,
+    };
+
+    // instance options object
+    const modalInstanceOptions = {
+      id: "deleteModal",
+      override: true,
+    };
+
+    const modal = new Modal($modalTargetEl, modalOptions, modalInstanceOptions);
+
+    deleteRef.current?.addEventListener("click", () => {
+      const backdrop = document.querySelector(".deleteModalBackDrop");
+      if (!backdrop) {
+        const backdropHTML = document.createElement("div");
+        backdropHTML.classList.add(
+          "bg-gray-900/50",
+          "dark:bg-gray-900/80",
+          "fixed",
+          "inset-0",
+          "z-40",
+          "deleteModalBackDrop"
+        );
+        document.body.appendChild(backdropHTML);
+      }
+      setItemToDelete(note);
+      modal.show();
+    });
+
     if (note) {
       const $targetEl = document.getElementById(`${note?.id}-dropdown`);
       const $triggerEl = document.getElementById(`${note?.id}-dropdown-button`);
@@ -35,7 +74,7 @@ const NoteRow = ({ noteId }) => {
 
       new Dropdown($targetEl, $triggerEl, options, instanceOptions);
     }
-  }, [note]);
+  }, [note, setItemToDelete]);
 
   if (note) {
     const created = new Date(note.createdAt).toLocaleString("fr-FR", {
@@ -107,12 +146,12 @@ const NoteRow = ({ noteId }) => {
               </li>
             </ul>
             <div className="py-1">
-              <Link
-                to="/"
+              <button
+                ref={deleteRef}
                 className="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
               >
                 Delete
-              </Link>
+              </button>
             </div>
           </div>
         </td>
