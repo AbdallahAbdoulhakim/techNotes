@@ -15,6 +15,7 @@ import errorHandler from "./middleware/errorHandler.js";
 
 import userRoutes from "./routes/userRoutes.js";
 import noteRoutes from "./routes/noteRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
 
 import dotenv from "dotenv";
 dotenv.config();
@@ -38,6 +39,7 @@ app.use(cookieParser());
 app.use(express.static("public"));
 
 app.use("/", root);
+app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
 app.use("/notes", noteRoutes);
 

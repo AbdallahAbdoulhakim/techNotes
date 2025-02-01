@@ -107,12 +107,6 @@ export const getUser = expressAsyncHandler(async (req, res, next) => {
 export const getUsers = expressAsyncHandler(async (req, res, next) => {
   try {
     const users = await userModel.find().select("-password -__v");
-
-    // if (!users?.length) {
-    //   res.status(404);
-    //   throw new Error("No users Found!");
-    // }
-
     res.status(200).json({
       success: true,
       data: users.map((user) => ({
