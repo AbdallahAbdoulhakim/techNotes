@@ -1,7 +1,9 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { setCredentials } from "../../features/auth/authSlice";
 
-const API_URL = "http://192.168.88.7:5000/";
+const API_URL = `https://${import.meta.env.VITE_BACKEND_SERVER_URL}:${
+  import.meta.env.VITE_BACKEND_PORT
+}/`;
 
 const baseQuery = fetchBaseQuery({
   baseUrl: API_URL,

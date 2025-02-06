@@ -4,8 +4,8 @@ import expressAsyncHandler from "express-async-handler";
 
 import userModel from "../models/userModel.js";
 
-const accessTokenExpire = "1m";
-const refreshTokenExpire = "1d";
+const accessTokenExpire = "10s";
+const refreshTokenExpire = "20s";
 
 // @desc Login
 // @route POST /auth
@@ -51,9 +51,9 @@ export const login = expressAsyncHandler(async (req, res, next) => {
 
     res.cookie("jwt", refreshToken, {
       httpOnly: true,
-      secure: false,
+      secure: true,
       sameSite: "none",
-      maxAge: 1 * 24 * 60 * 60 * 1000,
+      maxAge: 20 * 1000,
     });
 
     res.json({ accessToken });
@@ -68,6 +68,8 @@ export const login = expressAsyncHandler(async (req, res, next) => {
 export const refresh = expressAsyncHandler(async (req, res, next) => {
   try {
     const cookies = req.cookies;
+
+    console.log(cookies);
 
     if (!cookies?.jwt) {
       res.status(401);
@@ -122,6 +124,6 @@ export const logout = expressAsyncHandler(async (req, res) => {
     return res.sendStatus(204);
   }
 
-  res.clearCookie("jwt", { httpOnly: true, sameSite: "none", secure: false });
+  res.clearCookie("jwt", { httpOnly: true, sameSite: "none", secure: true });
   res.json({ message: "Cookie cleared" });
 });

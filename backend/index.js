@@ -3,6 +3,10 @@ import mongoose from "mongoose";
 
 import dbConnect from "./config/dbConnect.js";
 import path from "path";
+import fs from "fs";
+
+import http from "http";
+import https from "https";
 
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -23,9 +27,19 @@ dotenv.config();
 const __dirname = import.meta.dirname;
 
 const PORT = process.env.PORT || 5000;
+const HTTPS_PORT = process.env.HTTPS_PORT || 5443;
+
 const SERVER_URL = process.env.SERVER_URL || "localhost";
 
+const privateKey = fs.readFileSync(path.join(__dirname, "localhost-key.pem"));
+const certificate = fs.readFileSync(path.join(__dirname, "localhost.pem"));
+
+const credentials = { key: privateKey, cert: certificate };
+
 const app = express();
+
+const httpServer = http.createServer(app);
+const httpsServer = https.createServer(credentials, app);
 
 console.log(process.env.NODE_ENV);
 
@@ -61,9 +75,15 @@ app.use(errorHandler);
 
 mongoose.connection.once("open", () => {
   console.log("Connected to MONGO DB");
-  app.listen(PORT, SERVER_URL, () => {
+  httpServer.listen(PORT, SERVER_URL, () => {
     console.log(
-      `Server is up at ${SERVER_URL} and is listening to PORT ${PORT}.`
+      `Http Server is up at ${SERVER_URL} and is listening to PORT ${PORT}.`
+    );
+  });
+
+  httpsServer.listen(HTTPS_PORT, SERVER_URL, () => {
+    console.log(
+      `Https Server is up at ${SERVER_URL} and is listening to PORT ${HTTPS_PORT}.`
     );
   });
 });
