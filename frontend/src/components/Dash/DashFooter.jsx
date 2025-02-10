@@ -1,11 +1,13 @@
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHouse } from "@fortawesome/free-solid-svg-icons";
+import useAuth from "../../hooks/useAuth";
 
 import { useLocation } from "react-router-dom";
 
 const DashFooter = () => {
   const { pathname } = useLocation();
+  const { username, status } = useAuth();
 
   return (
     <footer className="p-4 bg-white md:p-8 lg:p-10 dark:bg-gray-800">
@@ -160,9 +162,9 @@ const DashFooter = () => {
           </svg>
           TechNotes
         </Link>
-        <div className="my-6 text-gray-800  font-mono dark:text-gray-400 flex max-w-[50vw] px-5 justify-around py-2 mx-auto">
-          <p>Current User : </p>
-          <p>Status :</p>
+        <div className="my-6 text-gray-800  font-mono dark:text-gray-400 flex md:max-w-[70vw] px-5 justify-around py-2 mx-auto">
+          <p className="text-sm md:text-lg">Current User : {username} </p>
+          <p className="text-sm md:text-lg">Status : {status}</p>
         </div>
         <ul className="flex flex-wrap justify-center items-center mb-6 text-gray-900 dark:text-white">
           {pathname !== "/dash" && (

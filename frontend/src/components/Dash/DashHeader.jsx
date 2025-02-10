@@ -4,18 +4,36 @@ import { useSendLogoutMutation } from "../../features/auth/authApiSlice";
 import AlertError from "../AlertError";
 import Spinner from "../Spinner";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+import {
+  faFileCirclePlus,
+  faUserPlus,
+} from "@fortawesome/free-solid-svg-icons";
+
 import { useEffect } from "react";
+
+import useAuth from "../../hooks/useAuth";
 
 const DASH_REGEX = /^\/dash(\/)?$/;
 const NOTES_REGEX = /^\/dash\/notes(\/)?$/;
+const ADD_NOTE_REGEX = /^\/dash\/notes\/new(\/)?$/;
 const USERS_REGEX = /^\/dash\/users(\/)?$/;
+const ADD_USER_REGEX = /^\/dash\/users\/new(\/)?$/;
 
 const DashHeader = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
+  const { isAdmin, isManager } = useAuth();
+
   const [sendLogout, { isLoading, isSuccess, isError, error }] =
     useSendLogoutMutation();
+
+  const handleLogout = async () => {
+    await sendLogout();
+    navigate("/");
+  };
 
   useEffect(() => {
     if (isSuccess) {
@@ -408,7 +426,7 @@ const DashHeader = () => {
               Apps
             </div>
             <div className="grid grid-cols-3 gap-4 p-4">
-              {!USERS_REGEX.test(pathname) && (
+              {!USERS_REGEX.test(pathname) && (isAdmin || isManager) && (
                 <Link
                   to="/dash/users"
                   className="block p-4 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 group"
@@ -424,6 +442,20 @@ const DashHeader = () => {
                   </svg>
                   <div className="text-sm text-gray-900 dark:text-white">
                     Users
+                  </div>
+                </Link>
+              )}
+              {!ADD_USER_REGEX.test(pathname) && (isAdmin || isManager) && (
+                <Link
+                  to="/dash/users/new"
+                  className="block p-4 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 group"
+                >
+                  <FontAwesomeIcon
+                    className="text-gray-400 h-[25px]"
+                    icon={faUserPlus}
+                  />
+                  <div className="text-sm text-gray-900 dark:text-white">
+                    Add User
                   </div>
                 </Link>
               )}
@@ -450,6 +482,22 @@ const DashHeader = () => {
                   </div>
                 </Link>
               )}
+
+              {!ADD_NOTE_REGEX.test(pathname) && (
+                <Link
+                  to="/dash/notes/new"
+                  className="block p-4 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 group"
+                >
+                  <FontAwesomeIcon
+                    className="text-gray-400 h-[25px]"
+                    icon={faFileCirclePlus}
+                  />
+                  <div className="text-sm text-gray-900 dark:text-white">
+                    Add Note
+                  </div>
+                </Link>
+              )}
+
               <Link
                 to="/"
                 className="block p-4 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 group"
@@ -495,7 +543,7 @@ const DashHeader = () => {
                 </Link>
               )}
               <button
-                onClick={sendLogout}
+                onClick={handleLogout}
                 className="block p-4 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 group"
               >
                 <svg
@@ -614,7 +662,7 @@ const DashHeader = () => {
             >
               <li>
                 <button
-                  onClick={sendLogout}
+                  onClick={handleLogout}
                   className="block py-2 px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                 >
                   Sign out

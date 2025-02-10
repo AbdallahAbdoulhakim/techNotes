@@ -14,8 +14,6 @@ const DeleteItem = ({
   const confirmRef = useRef();
   const navigate = useNavigate();
 
-  console.log(isDelSuccess);
-
   useEffect(() => {
     // set the modal menu element
     const $modalTargetEl = document.getElementById("deleteModal");

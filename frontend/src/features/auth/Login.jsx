@@ -4,6 +4,7 @@ import { useRef, useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "./authSlice";
 import { useLoginMutation } from "./authApiSlice";
+import usePersist from "../../hooks/usePersist";
 
 import Spinner from "../../components/Spinner";
 import AlertError from "../../components/AlertError";
@@ -14,6 +15,7 @@ const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errMsg, setErrMsg] = useState("");
+  const [persist, setPersist] = usePersist();
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -90,6 +92,7 @@ const Login = () => {
                     ref={userRef}
                     id="username"
                     value={username}
+                    autoComplete="off"
                     onChange={(e) => setUsername(e.target.value)}
                     className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     placeholder="johndoe"
@@ -108,6 +111,7 @@ const Login = () => {
                     name="password"
                     id="password"
                     value={password}
+                    autoComplete="off"
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
                     className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -121,6 +125,8 @@ const Login = () => {
                         id="remember"
                         aria-describedby="remember"
                         type="checkbox"
+                        checked={persist}
+                        onChange={() => setPersist((prev) => !prev)}
                         className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800"
                       />
                     </div>

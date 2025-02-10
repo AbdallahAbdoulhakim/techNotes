@@ -1,4 +1,6 @@
 import express from "express";
+import { adminManagerMiddleware } from "../middleware/authMiddlewares.js";
+
 import {
   createUser,
   deleteUser,
@@ -12,6 +14,7 @@ import verifyJWT from "../middleware/verifyJWT.js";
 const router = express.Router();
 
 router.use(verifyJWT);
+router.use(adminManagerMiddleware);
 
 router
   .route("/")

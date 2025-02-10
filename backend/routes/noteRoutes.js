@@ -8,6 +8,7 @@ import {
 } from "../controllers/notesController.js";
 
 import verifyJWT from "../middleware/verifyJWT.js";
+import { adminManagerMiddleware } from "../middleware/authMiddlewares.js";
 
 const router = express.Router();
 
@@ -18,7 +19,7 @@ router
   .get(getNotes)
   .post(createNote)
   .patch(updateNote)
-  .delete(deleteNote);
+  .delete(adminManagerMiddleware, deleteNote);
 
 router.get("/:ticket", getNote);
 

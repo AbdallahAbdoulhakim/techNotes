@@ -13,6 +13,9 @@ import EditUser from "./features/users/EditUser";
 import CreateNewNote from "./features/notes/CreateNewNote";
 import EditNote from "./features/notes/EditNote";
 import Prefetch from "./features/auth/Prefetch";
+import PersistLogin from "./features/auth/PersistLogin";
+import RequireAuth from "./features/auth/RequireAuth";
+import { ROLES } from "./config/roles";
 
 const App = () => {
   return (
@@ -21,20 +24,32 @@ const App = () => {
         <Route index element={<Public />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route element={<Prefetch />}>
-          <Route path="dash" element={<DashLayout />}>
-            <Route index element={<Welcome />} />
-            <Route path="notes">
-              <Route index element={<NotesList />} />
-              <Route exact path="new" element={<CreateNewNote />} />
-              <Route path=":id" element={<EditNote />} />
+        <Route element={<PersistLogin />}>
+          <Route
+            element={<RequireAuth allowedRoles={[...Object.values(ROLES)]} />}
+          >
+            <Route element={<Prefetch />}>
+              <Route path="dash" element={<DashLayout />}>
+                <Route index element={<Welcome />} />
+                <Route path="notes">
+                  <Route index element={<NotesList />} />
+                  <Route exact path="new" element={<CreateNewNote />} />
+                  <Route path=":id" element={<EditNote />} />
+                </Route>
+                <Route
+                  element={
+                    <RequireAuth allowedRoles={[ROLES.Admin, ROLES.Manager]} />
+                  }
+                >
+                  <Route path="users">
+                    <Route index element={<UsersList />} />
+                    <Route exact path="new" element={<CreateNewUser />} />
+                    <Route path=":id" element={<EditUser />} />
+                  </Route>
+                </Route>
+                <Route path="*" element={<Err404 home="/dash" />} />
+              </Route>
             </Route>
-            <Route path="users">
-              <Route index element={<UsersList />} />
-              <Route exact path="new" element={<CreateNewUser />} />
-              <Route path=":id" element={<EditUser />} />
-            </Route>
-            <Route path="*" element={<Err404 home="/dash" />} />
           </Route>
         </Route>
 

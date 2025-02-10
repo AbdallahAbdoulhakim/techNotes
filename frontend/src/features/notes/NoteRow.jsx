@@ -10,9 +10,13 @@ import { selectNoteById } from "./notesApiSlice";
 
 import { Dropdown, Modal } from "flowbite";
 
+import useAuth from "../../hooks/useAuth";
+
 const NoteRow = ({ noteId, setItemToDelete }) => {
   const note = useSelector((state) => selectNoteById(state, noteId));
   const deleteRef = useRef();
+
+  const { isAdmin, isManager } = useAuth();
 
   useEffect(() => {
     // set the modal menu element
@@ -36,6 +40,10 @@ const NoteRow = ({ noteId, setItemToDelete }) => {
     const modal = new Modal($modalTargetEl, modalOptions, modalInstanceOptions);
 
     deleteRef.current?.addEventListener("click", () => {
+      if (!isAdmin || !isManager) {
+        return;
+      }
+
       const backdrop = document.querySelector(".deleteModalBackDrop");
       if (!backdrop) {
         const backdropHTML = document.createElement("div");
@@ -74,7 +82,7 @@ const NoteRow = ({ noteId, setItemToDelete }) => {
 
       new Dropdown($targetEl, $triggerEl, options, instanceOptions);
     }
-  }, [note, setItemToDelete]);
+  }, [isAdmin, isManager, note, setItemToDelete]);
 
   if (note) {
     const created = new Date(note.createdAt).toLocaleString("fr-FR", {
@@ -145,14 +153,16 @@ const NoteRow = ({ noteId, setItemToDelete }) => {
                 </Link>
               </li>
             </ul>
-            <div className="py-1">
-              <button
-                ref={deleteRef}
-                className="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-              >
-                Delete
-              </button>
-            </div>
+            {(isAdmin || isManager) && (
+              <div className="py-1">
+                <button
+                  ref={deleteRef}
+                  className="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                >
+                  Delete
+                </button>
+              </div>
+            )}
           </div>
         </td>
       </tr>

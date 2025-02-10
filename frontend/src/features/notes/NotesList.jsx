@@ -11,9 +11,13 @@ import { useEffect, useState } from "react";
 import ListHeader from "../../components/Dash/ListHeader";
 import ListFooter from "../../components/Dash/ListFooter";
 
+import useAuth from "../../hooks/useAuth";
+
 import { useDeleteNoteMutation } from "./notesApiSlice";
 
 const NotesList = () => {
+  const { isAdmin, isManager, username } = useAuth();
+
   const {
     data: notes,
     isLoading,
@@ -51,10 +55,20 @@ const NotesList = () => {
   }
 
   if (isSuccess) {
-    const { ids } = notes;
+    const { ids, entities } = notes;
 
-    const tabContent = ids?.length
-      ? ids.map((noteId) => (
+    let filteredIds;
+
+    if (isManager || isAdmin) {
+      filteredIds = [...ids];
+    } else {
+      filteredIds = ids.filter(
+        (noteId) => entities[noteId].user.username === username
+      );
+    }
+
+    const tabContent = filteredIds?.length
+      ? filteredIds.map((noteId) => (
           <NoteRow
             key={noteId}
             noteId={noteId}

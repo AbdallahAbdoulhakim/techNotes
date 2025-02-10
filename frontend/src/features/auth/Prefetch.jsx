@@ -4,16 +4,25 @@ import { usersApiSlice } from "../users/usersApiSlice";
 
 import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
+import useAuth from "../../hooks/useAuth";
 
 const Prefetch = () => {
+  const { isAdmin, isManager } = useAuth();
+
   useEffect(() => {
+    let users;
     const notes = store.dispatch(notesApiSlice.endpoints.getNotes.initiate());
-    const users = store.dispatch(usersApiSlice.endpoints.getUsers.initiate());
+
+    if (isAdmin || isManager) {
+      users = store.dispatch(usersApiSlice.endpoints.getUsers.initiate());
+    }
 
     return () => {
       notes.unsubscribe();
-      users.unsubscribe();
+      users?.unsubscribe();
     };
+
+    // eslint-disable-next-line
   }, []);
 
   return <Outlet />;

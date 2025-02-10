@@ -3,9 +3,10 @@ import jwt from "jsonwebtoken";
 import expressAsyncHandler from "express-async-handler";
 
 import userModel from "../models/userModel.js";
+import { roles } from "../models/userModel.js";
 
-const accessTokenExpire = "10s";
-const refreshTokenExpire = "20s";
+const accessTokenExpire = "15m";
+const refreshTokenExpire = "7d";
 
 // @desc Login
 // @route POST /auth
@@ -34,7 +35,17 @@ export const login = expressAsyncHandler(async (req, res, next) => {
     }
 
     const accessToken = jwt.sign(
-      { UserInfo: { username: foundUser.username, roles: foundUser.roles } },
+      {
+        UserInfo: {
+          username: foundUser.username,
+          roles: foundUser.roles.map((role) =>
+            Object.entries(roles).reduce(
+              (prev, curr) => (curr[1] === role ? curr[0] : prev),
+              ""
+            )
+          ),
+        },
+      },
       process.env.ACCESS_TOKEN_SECRET,
       {
         expiresIn: accessTokenExpire,
@@ -53,7 +64,7 @@ export const login = expressAsyncHandler(async (req, res, next) => {
       httpOnly: true,
       secure: true,
       sameSite: "none",
-      maxAge: 20 * 1000,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     res.json({ accessToken });
@@ -68,8 +79,6 @@ export const login = expressAsyncHandler(async (req, res, next) => {
 export const refresh = expressAsyncHandler(async (req, res, next) => {
   try {
     const cookies = req.cookies;
-
-    console.log(cookies);
 
     if (!cookies?.jwt) {
       res.status(401);
@@ -98,7 +107,15 @@ export const refresh = expressAsyncHandler(async (req, res, next) => {
 
         const accessToken = jwt.sign(
           {
-            UserInfo: { username: foundUser.username, roles: foundUser.roles },
+            UserInfo: {
+              username: foundUser.username,
+              roles: foundUser.roles.map((role) =>
+                Object.entries(roles).reduce(
+                  (prev, curr) => (curr[1] === role ? curr[0] : prev),
+                  ""
+                )
+              ),
+            },
           },
           process.env.ACCESS_TOKEN_SECRET,
           {

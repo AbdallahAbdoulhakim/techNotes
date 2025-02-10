@@ -4,10 +4,12 @@ import Spinner from "../../components/Spinner";
 import { useNavigate } from "react-router-dom";
 import { useAddNewNoteMutation } from "./notesApiSlice";
 import { useState, useEffect } from "react";
+import useAuth from "../../hooks/useAuth";
 
 import AlertError from "../../components/AlertError";
 
 const CreateNewNote = () => {
+  const { isAdmin, isManager, username } = useAuth();
   const navigate = useNavigate();
   const users = useSelector((state) => selectAllUsers(state));
   const [addNewNote, { isSuccess, isError, isLoading, error }] =
@@ -45,15 +47,21 @@ const CreateNewNote = () => {
     return output;
   };
 
-  const options = users
-    .filter((user) => user.active)
-    .map((currUser) => {
-      return (
-        <option key={currUser.username} value={currUser.username}>
-          {currUser.username}
-        </option>
-      );
-    });
+  let filteredUsers;
+
+  if (isManager || isAdmin) {
+    filteredUsers = users.filter((user) => user.active);
+  } else {
+    filteredUsers = users.filter((user) => user.username === username);
+  }
+
+  const options = filteredUsers.map((currUser) => {
+    return (
+      <option key={currUser.username} value={currUser.username}>
+        {currUser.username}
+      </option>
+    );
+  });
 
   const canSave = [validTitle, validDescription, validOwner, !isLoading].every(
     Boolean
