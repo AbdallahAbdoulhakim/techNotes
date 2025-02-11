@@ -1,16 +1,19 @@
 import { Link, useNavigate } from "react-router-dom";
 
-import { useSelector } from "react-redux";
-
-import { selectUserById } from "./usersApiSlice";
-
 import { Dropdown, Modal } from "flowbite";
 
 import { useEffect, useRef } from "react";
 
+import { useGetUsersQuery } from "./usersApiSlice";
+import { memo } from "react";
+
 const UserRow = ({ userId, setItemToDelete }) => {
   const navigate = useNavigate();
-  const user = useSelector((state) => selectUserById(state, userId));
+  const { user } = useGetUsersQuery("usersList", {
+    selectFromResult: ({ data }) => ({
+      user: data?.entities[userId],
+    }),
+  });
   const deleteRef = useRef();
 
   useEffect(() => {
@@ -140,4 +143,7 @@ const UserRow = ({ userId, setItemToDelete }) => {
     );
   } else return null;
 };
-export default UserRow;
+
+const memoizedUserRow = memo(UserRow);
+
+export default memoizedUserRow;

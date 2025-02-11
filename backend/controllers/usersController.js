@@ -32,7 +32,9 @@ export const createUser = expressAsyncHandler(async (req, res, next) => {
       verifyBoolean(res, { active: body.active });
     }
 
-    const duplicate = await userModel.findOne({ username: body.username });
+    const duplicate = await userModel
+      .findOne({ username: body.username })
+      .collation({ locale: "en", strength: 2 });
 
     if (duplicate) {
       res.status(409);
@@ -158,7 +160,9 @@ export const updateUser = expressAsyncHandler(async (req, res, next) => {
       verifyBoolean(res, { active: body.active });
     }
 
-    const duplicate = await userModel.findOne({ username: body.username });
+    const duplicate = await userModel
+      .findOne({ username: body.username })
+      .collation({ locale: "en", strength: 2 });
 
     if (duplicate && duplicate?._id.toString() !== id) {
       res.status(409);

@@ -4,11 +4,13 @@ import { useAddNewUserMutation } from "./usersApiSlice";
 import { useNavigate } from "react-router-dom";
 import AlertError from "../../components/AlertError";
 import Spinner from "../../components/Spinner";
+import useTitle from "../../hooks/useTitle";
 
 const USER_REGEX = /^[A-z0-9]{3,20}$/;
 const PWD_REGEX = /^[A-z0-9!@#$%~&*+-_!]{4,20}$/;
 
 const EditUser = () => {
+  useTitle("Add new User");
   const [addNewUser, { isLoading, isSuccess, isError, error }] =
     useAddNewUserMutation();
 

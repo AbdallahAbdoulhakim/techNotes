@@ -15,7 +15,10 @@ import useAuth from "../../hooks/useAuth";
 
 import { useDeleteNoteMutation } from "./notesApiSlice";
 
+import useTitle from "../../hooks/useTitle";
+
 const NotesList = () => {
+  useTitle("Notes List");
   const { isAdmin, isManager, username } = useAuth();
 
   const {

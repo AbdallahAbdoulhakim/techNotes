@@ -3,17 +3,18 @@ import { FaCheckDouble } from "react-icons/fa";
 import { FiSlash } from "react-icons/fi";
 
 import { useEffect, useRef } from "react";
-
-import { useSelector } from "react-redux";
-
-import { selectNoteById } from "./notesApiSlice";
+import { useGetNotesQuery } from "./notesApiSlice";
+import { memo } from "react";
 
 import { Dropdown, Modal } from "flowbite";
 
 import useAuth from "../../hooks/useAuth";
 
 const NoteRow = ({ noteId, setItemToDelete }) => {
-  const note = useSelector((state) => selectNoteById(state, noteId));
+  const { note } = useGetNotesQuery("notesList", {
+    selectFromResult: ({ data }) => ({ note: data?.entities[noteId] }),
+  });
+
   const deleteRef = useRef();
 
   const { isAdmin, isManager } = useAuth();
@@ -169,4 +170,7 @@ const NoteRow = ({ noteId, setItemToDelete }) => {
     );
   } else return null;
 };
-export default NoteRow;
+
+const memoizedNoteRow = memo(NoteRow);
+
+export default memoizedNoteRow;

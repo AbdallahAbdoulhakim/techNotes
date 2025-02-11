@@ -6,10 +6,13 @@ import { setCredentials } from "./authSlice";
 import { useLoginMutation } from "./authApiSlice";
 import usePersist from "../../hooks/usePersist";
 
+import useTitle from "../../hooks/useTitle";
+
 import Spinner from "../../components/Spinner";
 import AlertError from "../../components/AlertError";
 
 const Login = () => {
+  useTitle("Login");
   const userRef = useRef();
 
   const [username, setUsername] = useState("");

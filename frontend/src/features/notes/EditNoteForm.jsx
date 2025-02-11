@@ -1,15 +1,14 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 
-import { useSelector } from "react-redux";
-
 import { Modal } from "flowbite";
 
 import AlertError from "../../components/AlertError";
 import Spinner from "../../components/Spinner";
 
 import { useDeleteNoteMutation, useUpdateNoteMutation } from "./notesApiSlice";
-import { selectAllUsers } from "../users/usersApiSlice";
+
+import { useGetUsersQuery } from "../users/usersApiSlice";
 
 import useAuth from "../../hooks/useAuth";
 
@@ -18,7 +17,12 @@ import DeleteItem from "../../components/Dash/DeleteItem";
 const EditNoteForm = ({ note }) => {
   const { isAdmin, isManager, username } = useAuth();
   const navigate = useNavigate();
-  const users = useSelector((state) => selectAllUsers(state));
+
+  const { users } = useGetUsersQuery("usersList", {
+    selectFromResult: ({ data }) => ({
+      users: data?.ids.map((id) => data?.entities[id]),
+    }),
+  });
 
   const [updateNote, { isSuccess, isLoading, isError, error }] =
     useUpdateNoteMutation();
@@ -61,8 +65,6 @@ const EditNoteForm = ({ note }) => {
       </option>
     );
   });
-
-  console.log(users);
 
   const errorMsg = () => {
     let output = [];
@@ -120,13 +122,8 @@ const EditNoteForm = ({ note }) => {
   }, [description]);
 
   useEffect(() => {
-    setValidOWner(
-      users
-        .filter((user) => user.active || user.username === note?.user?.username)
-        .map((user) => user.username)
-        .includes(owner)
-    );
-  }, [note, owner, users]);
+    setValidOWner(filteredUsers.some((user) => user.username === owner));
+  }, [filteredUsers, owner]);
 
   useEffect(() => {
     setFormError(false);
@@ -134,11 +131,13 @@ const EditNoteForm = ({ note }) => {
 
   useEffect(() => {
     if (isSuccess) {
+      console.log(isSuccess);
       setTitle("");
       setDescription("");
       setOwner("null");
       setCompleted(false);
       navigate("/dash/notes");
+      window.location.reload();
     }
   }, [isSuccess, navigate]);
 

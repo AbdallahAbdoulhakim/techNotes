@@ -7,7 +7,10 @@ import DeleteItem from "../../components/Dash/DeleteItem";
 import { Modal } from "flowbite";
 import Spinner from "../../components/Spinner";
 
+import useTitle from "../../hooks/useTitle";
+
 const EditUserForm = ({ user }) => {
+  useTitle("Edit User");
   const [username, setUsername] = useState(user?.username);
   const [validUsername, setValidUsername] = useState(false);
 

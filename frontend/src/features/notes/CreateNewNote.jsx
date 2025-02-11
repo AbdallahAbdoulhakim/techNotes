@@ -1,17 +1,24 @@
-import { selectAllUsers } from "../users/usersApiSlice";
-import { useSelector } from "react-redux";
 import Spinner from "../../components/Spinner";
 import { useNavigate } from "react-router-dom";
 import { useAddNewNoteMutation } from "./notesApiSlice";
 import { useState, useEffect } from "react";
 import useAuth from "../../hooks/useAuth";
+import { useGetUsersQuery } from "../users/usersApiSlice";
+import useTitle from "../../hooks/useTitle";
 
 import AlertError from "../../components/AlertError";
 
 const CreateNewNote = () => {
+  useTitle("Add new Note");
   const { isAdmin, isManager, username } = useAuth();
   const navigate = useNavigate();
-  const users = useSelector((state) => selectAllUsers(state));
+
+  const { users } = useGetUsersQuery("usersList", {
+    selectFromResult: ({ data }) => ({
+      users: data?.ids.map((id) => data?.entities[id]),
+    }),
+  });
+
   const [addNewNote, { isSuccess, isError, isLoading, error }] =
     useAddNewNoteMutation();
 
@@ -106,6 +113,7 @@ const CreateNewNote = () => {
       setCompleted(false);
       setOwner("Select Owner...");
       navigate("/dash/notes");
+      window.location.reload();
     }
   }, [isSuccess, navigate]);
 

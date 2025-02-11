@@ -14,8 +14,10 @@ import { ROLES } from "../../config/roles";
 import DeleteItem from "../../components/Dash/DeleteItem";
 
 import { useDeleteUserMutation } from "./usersApiSlice";
+import useTitle from "../../hooks/useTitle";
 
 const UsersList = () => {
+  useTitle("Users List");
   const {
     data: users,
     isLoading,

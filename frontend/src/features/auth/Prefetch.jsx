@@ -10,18 +10,15 @@ const Prefetch = () => {
   const { isAdmin, isManager } = useAuth();
 
   useEffect(() => {
-    let users;
-    const notes = store.dispatch(notesApiSlice.endpoints.getNotes.initiate());
+    store.dispatch(
+      notesApiSlice.util.prefetch("getNotes", "notesList", { force: true })
+    );
 
     if (isAdmin || isManager) {
-      users = store.dispatch(usersApiSlice.endpoints.getUsers.initiate());
+      store.dispatch(
+        usersApiSlice.util.prefetch("getUsers", "usersList", { force: true })
+      );
     }
-
-    return () => {
-      notes.unsubscribe();
-      users?.unsubscribe();
-    };
-
     // eslint-disable-next-line
   }, []);
 

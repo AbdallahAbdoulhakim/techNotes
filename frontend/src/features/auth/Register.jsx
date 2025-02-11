@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
+import useTitle from "../../hooks/useTitle";
 
 const Register = () => {
+  useTitle("Register");
   return (
     <section className="bg-gray-50 dark:bg-gray-900 min-h-screen flex">
       <div className="flex-grow flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">

@@ -87,6 +87,14 @@ export const updateNote = expressAsyncHandler(async (req, res, next) => {
     let body = req.body;
 
     if (body?.username) {
+      if (
+        !req?.roles.some((role) => ["Admin", "Manager"].includes(role)) &&
+        body?.username !== req?.user
+      ) {
+        res.status(403);
+        throw new Error(`This action not allowed to this user!`);
+      }
+
       const foundUser = await userModel.findOne({ username: body.username });
 
       if (!foundUser) {
@@ -111,6 +119,16 @@ export const updateNote = expressAsyncHandler(async (req, res, next) => {
       }
 
       body.user = foundUser;
+    }
+
+    const noteToUpdate = await noteModel.findOne({ ticket })?.populate("user");
+
+    if (
+      !req?.roles.some((role) => ["Admin", "Manager"].includes(role)) &&
+      noteToUpdate.user.username !== req?.user
+    ) {
+      res.status(403);
+      throw new Error(`User is not allowed to access this resource!`);
     }
 
     const updatedNote = await (
@@ -157,6 +175,14 @@ export const getNote = expressAsyncHandler(async (req, res, next) => {
       throw new Error(`Note Not Found`);
     }
 
+    if (
+      !req?.roles.some((role) => ["Admin", "Manager"].includes(role)) &&
+      foundNote.user.username !== req?.user
+    ) {
+      res.status(403);
+      throw new Error(`User is not allowed to access this resource!`);
+    }
+
     res.status(200).json({
       success: true,
       data: {
@@ -184,6 +210,11 @@ export const deleteNote = expressAsyncHandler(async (req, res, next) => {
 
     verifyNumericParams(res, { id });
 
+    if (!req?.roles.some((role) => ["Admin", "Manager"].includes(role))) {
+      res.status(403);
+      throw new Error(`User is not allowed to access this resource!`);
+    }
+
     const deletedNote = await (
       await noteModel.findOneAndDelete({ ticket: id })
     )?.populate("user");
@@ -206,9 +237,15 @@ export const getNotes = expressAsyncHandler(async (req, res, next) => {
   try {
     const notes = await noteModel.find().populate("user");
 
+    const filteredNotes = req?.roles.some((role) =>
+      ["Admin", "Manager"].includes(role)
+    )
+      ? notes
+      : notes.filter((note) => note.user.username === req?.user);
+
     res.status(200).json({
       success: true,
-      data: notes.map((note) => ({
+      data: filteredNotes.map((note) => ({
         ticket: note.ticket,
         title: note.title,
         text: note.text,
