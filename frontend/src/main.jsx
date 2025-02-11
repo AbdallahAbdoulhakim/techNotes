@@ -5,8 +5,11 @@ import "./index.css";
 import App from "./App.jsx";
 import store from "./app/store";
 import { Provider } from "react-redux";
-
 import "flowbite";
+
+import { disableReactDevTools } from "@fvilers/disable-react-devtools";
+
+if (import.meta.env.VITE_NODE_ENV === "production") disableReactDevTools();
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
